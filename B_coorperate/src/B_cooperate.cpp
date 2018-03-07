@@ -39,37 +39,44 @@ class GyroSample : public frc::IterativeRobot {
 	VictorSP intakeLeft {6};
 	string gameData;
 	Timer t;
-	AnalogGyro gyro;
+//	AnalogGyro gyro;
 	double angle = 0, kp = 0.03;
 	int flag = 0;
 	class RobotDrive myRobot { leftDrive_3, rightDrive_1};
 	class Joystick *m_stick = new Joystick(0);
 	class Joystick *m_stick2 = new Joystick(1);
+	AnalogInput *encoderArmBack = new AnalogInput(0);
+	PIDController ParmBack{0.02, 0, 0, encoderArmBack, &armBack};
+	long value = encoderArmBack->GetAccumulatorValue();
+	long count = encoderArmBack->GetAccumulatorCount();
+//	encoderArmBack->SetAccumul atorInitialValue(0);
+
+	//int value = encoderArmBack->GetAccumulatorValue();
 
 public:
 
 
-	GyroSample():
+/*	GyroSample():
 	  gyro(1)
 	  {
 
 	  }
 
-
+*/
 
 
 	void RobotInit()
 	{
 		CameraServer::GetInstance()->StartAutomaticCapture(0);
 		CameraServer::GetInstance()->StartAutomaticCapture(1);
-		CameraServer::GetInstance()->StartAutomaticCapture(2);
+	//	CameraServer::GetInstance()->StartAutomaticCapture(2);
 	}
 
 	void AutonomousInit(){
 		t.Reset();
 		t.Start();
-		gyro.Reset();
-		gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
+//		gyro.Reset();
+//		gameData = frc::DriverStation::GetInstance().GetGameSpecificMessage();
 
 	/*	if( angle != 0 )
 		{
@@ -77,14 +84,14 @@ public:
 		}*/
 	}
 
-/*	void AutonomousPeriodic(){
+	void AutonomousPeriodic(){
 
 //		if( t.Get() < 1.0 )
 //		{
 //			gyro.Calibrate();
 //		}
 
-		if(gameData.length() > 0)
+/*		if(gameData.length() > 0)
 		{
 			if(gameData[0] == 'L')
 			{
@@ -99,28 +106,46 @@ public:
 
 		if( t.Get() < 5.0  && t.Get() > 1.0 )
 		{
-//			angle=gyro.GetAngle();
-//			double turningValue = (0-angle) * 2.5;
+			angle=gyro.GetAngle();
+			double turningValue = (0-angle) * 2.5;
 			myRobot.ArcadeDrive( 0.6 , -0.25);
-//			cout<<"angle:"<<angle<<endl;
-//			cout<<"turningValue:"<<turningValue<<endl;
+			cout<<"angle:"<<angle<<endl;
+			cout<<"turningValue:"<<turningValue<<endl;
 		}
 		else if( t.Get() >= 8.0 )
 		{
 			myRobot.ArcadeDrive( 0.0 ,0.0 );
 			t.Stop();
 		}
+*/
+		if( t.Get() < 3.0   )
+		{
+		//	angle=gyro.GetAngle();
+		//	double turningValue = (0-angle) * 2.5;
+			myRobot.ArcadeDrive( 0.6 , 0);
+		//	cout<<"angle:"<<angle<<endl;
+		//	cout<<"turningValue:"<<turningValue<<endl;
+		}
+		else if( t.Get() >= 3.0)
+		{
+			myRobot.ArcadeDrive( 0.0 ,0.0 );
+			t.Stop();
+		}
 
 	}
-*/
+
 	void TeleopInit(){
 //		gyro->Reset();
 //		gyro->Calibrate();
+		encoderArmBack->ResetAccumulator();
 	}
 
 	void TeleopPeriodic(){
 
-
+		// AccumulatorResult *result = new AccumulatorResult();
+		value = encoderArmBack->GetAccumulatorValue();
+		count = encoderArmBack->GetAccumulatorCount();
+		cout<<"value:"<<value<<" count:"<<count<<endl;
 
 		if(m_stick->GetRawButton(1)){
 			intakeLeft.Set(-1);
@@ -197,7 +222,7 @@ public:
 		}
 		else
 		{
-			armRight.Set( m_stick2->GetRawAxis(4) * 1.0 );
+			armRight.Set( m_stick2->GetRawAxis(4) * 0.7 );
 		}
 //		}
 
