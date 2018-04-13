@@ -172,5 +172,4 @@ public:
 };
 
 
-
 START_ROBOT_CLASS(GyroSample)
